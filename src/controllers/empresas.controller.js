@@ -1,10 +1,10 @@
-const Usuarios = require('../models/empresas.model');
+const Empresas = require('../models/empresas.model');
 const bcrypt = require('bcrypt-nodejs');
 const jwt = require('../services/jwt')
 
 
 function UsuarioInicial() {
-    Usuarios.find({ rol: "SuperAdmin", usuario: "SuperAdmin" }, (err, usuarioEncontrado) => {
+    Empresas.find({ rol: "SuperAdmin", usuario: "SuperAdmin" }, (err, usuarioEncontrado) => {
       if (usuarioEncontrado.length == 0) {
         bcrypt.hash("123456", null, null, (err, passwordEncriptada) => {
           Usuarios.create({
@@ -17,6 +17,8 @@ function UsuarioInicial() {
     });
   }
   
+
+
 //Login
  function Login(req, res) {
     var parametros = req.body;
@@ -58,7 +60,10 @@ function agregarEmpresa(req, res) {
         empresasModel.nombre = parametros.nombre;
         empresasModel.email = parametros.email;
         empresasModel.password = parametros.password;
+        
         empresasModel.rol = 'Empresa';
+        empresasModel.tipoEmpresa = parametros.tipoEmpresa;
+        
 
         Empresas.find({ email: parametros.email }, (err, empresaEncotrada) => {
             if (empresaEncotrada.length == 0) {
@@ -83,7 +88,7 @@ function agregarEmpresa(req, res) {
 }
 
 //Editar Empresa
-function editarEmpresa(req, res) {
+/*function editarEmpresa(req, res) {
     var idEmpresa = req.params.idEmpresa;
     var parametros = req.body;
 
@@ -130,7 +135,20 @@ function editarEmpresa(req, res) {
 
     }
 
+}*/
+
+function editarEmpresa (req, res) {
+    var IdEmpr = req.params.idEmpresa;
+    var parametros = req.body;
+
+    Empresas.findByIdAndUpdate(IdEmpr, parametros, { new: true } ,(err, empresaActualizada) => {
+        if (err) return res.status(500).send({ mensaje: 'Error en la peticion'});
+        if(!empresaActualizada) return res.status(404).send( { mensaje: 'Error al Editar la empresa'});
+
+        return res.status(200).send({ empresa: empresaActualizada});
+    });
 }
+
 //Eliminar
 function eliminarEmpresa(req, res) {
     var idUser = req.params.idEmpresa;
@@ -142,10 +160,31 @@ function eliminarEmpresa(req, res) {
     })
 }
 
+function ObtenerEmpresas(req,res){
+    Empresas.find((err,empresasObtenidas)=>{
+        if(err) return res.send({mensaje: "Error: " + err})
+
+        return res.send({empresas: empresasObtenidas})
+    })
+}
+
+function ObtenerEmpresaId(req, res) {
+    var IdEmpr = req.params.idEmpresa;
+
+    Empresas.findById(IdEmpr, (err, empresaEncontrada) => {
+        if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
+        if (!empresaEncontrada) return res.status(404).send( { mensaje: 'Error al obtener los datos' });
+
+        return res.status(200).send({ empresa: empresaEncontrada });
+    })
+}
+
 module.exports = {
-    usuarioInicial,
+    UsuarioInicial,
     Login,
     agregarEmpresa,
     editarEmpresa,
-    eliminarEmpresa
+    eliminarEmpresa,
+    ObtenerEmpresas,
+    ObtenerEmpresaId
 }
