@@ -173,11 +173,13 @@ function ObtenerEmpresaId(req, res) {
 
     Empresas.findById(IdEmpr, (err, empresaEncontrada) => {
         if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
-        if (!empresaEncontrada) return res.status(404).send( { mensaje: 'Error al obtener los datos' });
+        if (!empresaEncontrada) return res.status(500).send( { mensaje: 'Error al obtener los datos' });
 
         return res.status(200).send({ empresa: empresaEncontrada });
     })
 }
+
+
 
 module.exports = {
     UsuarioInicial,
