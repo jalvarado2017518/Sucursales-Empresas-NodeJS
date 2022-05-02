@@ -10,33 +10,37 @@ function obtenerSucursales (req, res) {
     })
 }
 
-function agregarSucursal(req, res) {
+function agregarSucursal(req, res){
+    if(req.user.rol == 'Empresa') return res.status(500).send({mensaje: "Solo la empresa puede agregar sucursal"})
     var parametros = req.body;
-    var sucursalModelo = new Sucursales();
+    var SucursalesModel = new Sucursales();
+    if(parametros.nombreSucursal && parametros.direccionSucursal){
 
-    if (parametros.nombre && parametros.direccion && parametros.idEmpresa) {
-        sucursalModelo.nombre = parametros.nombre;
-        sucursalModelo.direccion = parametros.direccion;
-        sucursalModelo.idEmpresa = parametros.idEmpresa;
+        SucursalesModel.nombreSucursal = parametros.nombreSucursal;
+        SucursalesModel.direccionSucursal = parametros.direccionSucursal;
+        SucursalesModel.idEmpresa = req.user.sub;
 
-        Sucursales.find({ nombre: parametros.nombre }, (err, sucursalEncontrada) => {         
-            if (sucursalEncontrada.length == 0) {
-                
-                    sucursalModelo.save((err, sucursalGuardada) => {
-                        if (err) return res.status(500)
-                            .send({ mensaje: "Error enn la peticion" });
-                        if (!sucursalGuardada) return res.status(500)
-                            .send({ mensaje: "Error al agregar" });
 
-                        return res.status(200).send({ empresa: sucursalGuardada });
-                    });
-                
-            } else {
-                return res.status(500)
-                    .send({ mensaje: "Este correo esta en uso" });
-            }
-        })
+        Sucursales.findOne({nombreSucursal: parametros.nombreSucursal, idEmpresa: req.user.sub}, (err, sucursalEncontrada)=>{
+
+            Sucursales.findOne({direccionSucursal: parametros.direccionSucursal, idEmpresa: req.user.sub}, (err, direccionEncontrada)=>{
+
+                if(sucursalEncontrada != null || direccionEncontrada != null) {
+                    return res.status(500).send({Message: 'Esta sucursal ya existe, ingrese otros datos para agregar'})
+
+                }else{
+                    SucursalesModel.save((err, SucursalGuardada)=>{
+                        if(err) return res.status(500).send({message: 'Error en la peticion'});
+                        if(!SucursalGuardada) return res.status(404).send({message: 'No se han podido guardar los datos'});
+                        
+                        return res.status(200).send({Sucursales: SucursalGuardada});
+                    });                }
+            });
+
+        });
         
+    }else{
+        return res.status(200).send({message:'Debe llenar los campos solicitados'});
     }
 }
 
