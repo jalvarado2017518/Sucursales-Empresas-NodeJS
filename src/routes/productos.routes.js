@@ -7,7 +7,7 @@ const api = express.Router()
 
 
 api.put('/editarProducto/:idProducto',md_autenticacion.Auth, productosController.editarProducto);
-api.post('/agregar', productosController.agregarProducto);
+api.post('/agregarProducto',md_autenticacion.Auth, productosController.agregarProducto);
 api.delete('/eliminarProducto/:idProducto', md_autenticacion.Auth,productosController.eliminarProducto);
 api.get('/productos', productosController.obtenerProductos);
 
