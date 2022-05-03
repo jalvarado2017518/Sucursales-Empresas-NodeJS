@@ -7,7 +7,7 @@ function UsuarioInicial() {
     Empresas.find({ rol: "SuperAdmin", usuario: "SuperAdmin" }, (err, usuarioEncontrado) => {
       if (usuarioEncontrado.length == 0) {
         bcrypt.hash("123456", null, null, (err, passwordEncriptada) => {
-          Usuarios.create({
+          Empresas.create({
             usuario: "SuperAdmin",
             password: passwordEncriptada,
             rol: "SuperAdmin",
@@ -59,6 +59,7 @@ function agregarEmpresa(req, res) {
     if (parametros.nombre && parametros.email && parametros.password) {
         empresasModel.nombre = parametros.nombre;
         empresasModel.email = parametros.email;
+        empresasModel.usuario = parametros.usuario;
         empresasModel.password = parametros.password;
         
         empresasModel.rol = 'Empresa';
