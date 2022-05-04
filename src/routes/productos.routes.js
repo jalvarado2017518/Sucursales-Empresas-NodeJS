@@ -6,9 +6,11 @@ const api = express.Router()
 
 
 
-api.put('/editarProducto/:idProducto',md_autenticacion.Auth, productosController.editarProducto);
-api.post('/agregarProducto',md_autenticacion.Auth, productosController.agregarProducto);
-api.delete('/eliminarProducto/:idProducto', md_autenticacion.Auth,productosController.eliminarProducto);
-api.get('/productos', productosController.obtenerProductos);
+api.put('/editarProducto/:idProducto', productosController.editarProducto);
+api.post('/agregarProducto', productosController.agregarProducto);
+api.delete('/eliminarProducto/:idProducto',productosController.eliminarProducto);
+api.get('/productos',md_autenticacion.Auth,productosController.obtenerProductos);
+api.get('/productos/:idProducto', productosController.ObtenerProductosId);
+
 
 module.exports = api;

@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var ProductosSchema = Schema({
     nombreProducto: String,
     nombreProveedor: String,
-    Stock: Number,
+    stock: Number,
     idEmpresa: { type: Schema.Types.ObjectId, ref: 'Empresa'}
 });
 
