@@ -56,7 +56,7 @@ function agregarEmpresa(req, res) {
     var parametros = req.body;
     var empresasModel = new Empresas();
 
-    if (parametros.nombre && parametros.email && parametros.password) {
+    if (parametros.nombre && parametros.usuario && parametros.email && parametros.password) {
         empresasModel.nombre = parametros.nombre;
         empresasModel.email = parametros.email;
         empresasModel.usuario = parametros.usuario;

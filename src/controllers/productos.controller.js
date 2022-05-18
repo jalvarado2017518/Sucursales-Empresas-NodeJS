@@ -44,7 +44,7 @@ function agregarProducto(req, res) {
     var parametros = req.body;
     var productosModel = new Productos();
 
-    if (parametros.nombreProducto) {
+    if (parametros.nombreProducto && parametros.stock && parametros.idEmpresa) {
         productosModel.nombreProducto = parametros.nombreProducto;
         productosModel.nombreProveedor = parametros.nombreProveedor;
         productosModel.stock = parametros.stock;
