@@ -6,8 +6,8 @@ var productosSucursalSchema = Schema({
     nombreProducto: String,
     stock: Number,
     cantidadVendida: Number,
-    idSucursal: { type: Schema.Types.ObjectId, ref: 'Sucursales'}
-
+    idSucursal: { type: Schema.Types.ObjectId, ref: 'Sucursales'},
+    idEmpresa : { type: Schema.Types.ObjectId, ref: 'Empresa'}
 })
 
 module.exports=mongoose.model('productosSucursal',productosSucursalSchema)
