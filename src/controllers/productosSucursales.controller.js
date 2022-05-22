@@ -26,7 +26,7 @@ function obtenerProductosSucursales(req, res) {
 }
 
 function agregarProductoSucursal(req, res) {
-    var parametros = req.body;//empresa aqui abajo
+    var parametros = req.body;
     if (req.user.rol != 'SuperAdmin') return res.status(500).send({ message: 'Solo las empresas pueden acceder a esta información' })
     if (parametros.cantidadVendida) return res.status(500).send({ message: "Este campo no se puede agregar" });
     if (parametros.stock <= 0) return res.status(500).send({ message: "Debe ingresar un digito mayor a 0" })
