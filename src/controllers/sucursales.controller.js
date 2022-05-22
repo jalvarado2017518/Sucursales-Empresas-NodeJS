@@ -11,9 +11,10 @@ function obtenerSucursales (req, res) {
 }
 
 function agregarSucursal(req, res){
-    if(req.user.rol == 'Empresa') return res.status(500).send({mensaje: "Solo la empresa puede agregar sucursal"})
     var parametros = req.body;
     var SucursalesModel = new Sucursales();
+    if(req.user.rol == 'Empresa') return res.status(500).send({mensaje: "Solo la empresa puede agregar sucursal"})
+
     if(parametros.nombreSucursal && parametros.direccionSucursal){
 
         SucursalesModel.nombreSucursal = parametros.nombreSucursal;
@@ -40,7 +41,7 @@ function agregarSucursal(req, res){
         });
         
     }else{
-        return res.status(200).send({message:'Debe llenar los campos solicitados'});
+        return res.status(200).send({message:'Llene todos los campos, por favor'});
     }
 }
 
