@@ -26,16 +26,16 @@ function obtenerProductosSucursales(req, res) {
 }
 
 function agregarProductoSucursal(req, res) {
-    var parametros = req.body;
-    if (req.user.rol != 'Empresa') return res.status(500).send({ message: 'Solo las empresas pueden acceder a esta información' })
+    var parametros = req.body;//empresa aqui abajo
+    if (req.user.rol != 'SuperAdmin') return res.status(500).send({ message: 'Solo las empresas pueden acceder a esta información' })
     if (parametros.cantidadVendida) return res.status(500).send({ message: "Este campo no se puede agregar" });
     if (parametros.stock <= 0) return res.status(500).send({ message: "Debe ingresar un digito mayor a 0" })
-    if (parametros.nombreProducto && parametros.stock && parametros.NombreSucursal
-        && parametros.nombreProducto != "" && parametros.stock != "" && parametros.NombreSucursal != "") {
-        Sucursales.findOne({ nombreSucursal: parametros.NombreSucursal, idEmpresa: req.user.sub }, (err, sucursalEncontrada) => {
+    if (parametros.nombreProducto && parametros.stock && parametros.nombreSucursal
+        && parametros.nombreProducto != "" && parametros.stock != "" && parametros.nombreSucursal != "") {
+        Sucursales.findOne({ nombreSucursal: parametros.nombreSucursal, idEmpresa: req.user.sub }, (err, sucursalEncontrada) => {
             if (err) return res.status(400).send({ message: 'Sucursal no encontrada, intente de nuevo' });
             if (!sucursalEncontrada) return res.status(400).send({ message: 'Esta sucursal no existe' })
-            ProductosSucursales.findOne({ nombreProducto: parametros.nombreProducto, idSucursal: sucursalEncontrada._id }, (err, productoEncontradoSucursal) => {
+            ProductoSucursal.findOne({ nombreProducto: parametros.nombreProducto, idSucursal: sucursalEncontrada._id }, (err, productoEncontradoSucursal) => {
                 if (err) return res.status(404).send({ message: 'Error en la petición' })
                 if (productoEncontradoSucursal == null) {
                     Producto.findOne({ NombreProducto: parametros.nombreProducto, idEmpresa: req.user.sub }, (err, productoEmpresaStock) => {
@@ -46,7 +46,7 @@ function agregarProductoSucursal(req, res) {
                         if (parametros.stock > productoEmpresaStock.Stock) {
                             return res.status(500).send({ message: 'No hay suficiente stock' });
                         }
-                        var ProductosSucursalModelo = new ProductosSucursales();
+                        var ProductosSucursalModelo = new ProductoSucursal();
                         ProductosSucursalModelo.nombreProducto = parametros.nombreProducto;
                         ProductosSucursalModelo.stock = parametros.stock;
                         ProductosSucursalModelo.idSucursal = sucursalEncontrada._id;
@@ -67,7 +67,6 @@ function agregarProductoSucursal(req, res) {
                     })
                 } else {
                     var restarStock = (parametros.stock * -1)
-
                     Producto.findOne({ NombreProducto: parametros.nombreProducto, idEmpresa: req.user.sub }, (err, productoEmpresaStock) => {
                         if (err) return res.status(400).send({ message: 'Sucursal no encontrada, intente de nuevo' });
                         if (!productoEmpresaStock) return res.status(400).send({ message: 'El producto no existe en la empresa' })
@@ -80,7 +79,7 @@ function agregarProductoSucursal(req, res) {
                             if (err) return res.status(500).send({ message: 'No se pudo editar el producto de la empresa' });
                             if (!productoEmpresaEditado) return res.status(404).send({ message: 'El producto no existe en la empresa' });
 
-                            ProductosSucursales.findOneAndUpdate({ _id: productoEncontradoSucursal._id }, { $inc: { stock: parametros.stock } }, { new: true }, (err, productoSucursalEditado) => {
+                            ProductoSucursal.findOneAndUpdate({ _id: productoEncontradoSucursal._id }, { $inc: { stock: parametros.stock } }, { new: true }, (err, productoSucursalEditado) => {
                                 if (err) return res.status(500).send({ message: 'No se pudo editar el producto de la empresa' });
                                 if (!productoSucursalEditado) return res.status(404).send({ message: 'No se encontraron productos para editar' });
                                 return res.status(200).send({ ProductosSucursal: productoSucursalEditado });
