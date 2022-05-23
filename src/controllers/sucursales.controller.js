@@ -65,7 +65,7 @@ function ObtenerSucursalesId(req, res) {
     }
 }
 */
-/*function agregarSucursal(req, res) {
+function agregarSucursal(req, res) {
     var parametros = req.body;
     var sucursalModel = new Sucursales();
 
@@ -86,18 +86,18 @@ function ObtenerSucursalesId(req, res) {
         return res.status(500).send({ mensaje: "Debe llenar todos los campos necesarios" })
     }
 }
-*/
 
-function agregarSucursal(req, res){
+
+/*function agregarSucursal(req, res){
     var parametros = req.body;
     var SucursalesModel = new Sucursales();
-    if(req.user.rol == 'Empresa') return res.status(500).send({mensaje: "Solo la empresa puede agregar sucursal"})
+    if(req.user.rol == 'SuperAdmin') return res.status(500).send({mensaje: "Solo la empresa puede agregar sucursal"})
 
     if(parametros.nombreSucursal && parametros.direccionSucursal){
 
         SucursalesModel.nombreSucursal = parametros.nombreSucursal;
         SucursalesModel.direccionSucursal = parametros.direccionSucursal;
-        sucursalModel.municipio = parametros.municipio;
+        SucursalesModel .municipio = parametros.municipio;
         SucursalesModel.idEmpresa = req.user.sub;
 
 
@@ -123,7 +123,7 @@ function agregarSucursal(req, res){
         return res.status(200).send({message:'Llene todos los campos, por favor'});
     }
 }
-
+*/
 
 /*function editarSucursal(req, res) {
     var idSucursal = req.params.idSucursal;
