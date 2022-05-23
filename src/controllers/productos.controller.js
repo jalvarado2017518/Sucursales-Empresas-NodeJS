@@ -44,11 +44,11 @@ function agregarProducto(req, res) {
     var parametros = req.body;
     var productosModel = new Productos();
 
-    if (parametros.nombreProducto && parametros.stock && parametros.idEmpresa) {
+    if (parametros.nombreProducto) {
         productosModel.nombreProducto = parametros.nombreProducto;
         productosModel.nombreProveedor = parametros.nombreProveedor;
         productosModel.stock = parametros.stock;
-        productosModel.idEmpresa = parametros.idEmpresa;
+        productosModel.idEmpresa = req.user.sub;
 
         productosModel.save((err, productoGuardado) => {
             if (err) return res.status(500).send({ mensaje: "error en la peticion" })
@@ -104,13 +104,23 @@ function eliminarProducto(req, res) {
     })
 }
 
+
 function obtenerProductos (req, res) {
-    Productos.find((err, productosObtenidos) => {
+    if (req.user.rol == "SuperAdmin") {
+        Productos.find((err, productosObtenidos) => {
         if (err) return res.send({ mensaje: "Error: " + err })
 
         return res.send({ productos: productosObtenidos })
 
     })
+    }else{
+        Productos.find({idEmpresa: req.user.sub},(err, productosObtenidos) => {
+            if (err) return res.send({ mensaje: "Error: " + err })
+    
+            return res.send({ productos: productosObtenidos })
+    
+        })
+    }
 }
 
 function ObtenerProductosId(req, res) {
@@ -124,10 +134,22 @@ function ObtenerProductosId(req, res) {
     })
 }
 
+function ObtenerProductosIdEmpresa(req, res) {
+    var idEmp = req.params.idEmpresa;
+
+    Productos.find( { idEmpresa : idEmp}, (err, productoEncontrado) => {
+        if(err) return res.status(500).send({ mensaje: "Error en la peticion" });
+        if(!productoEncontrado) return res.status(404).send({ mensaje: "Error, no se encontraron productos" });
+
+        return res.status(200).send({ producto: productoEncontrado });
+    })
+}
+
 module.exports = {
     obtenerProductos,
     agregarProducto,
     editarProducto,
     eliminarProducto,
-    ObtenerProductosId
+    ObtenerProductosId,
+    ObtenerProductosIdEmpresa
 }

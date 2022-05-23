@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt-nodejs');
 const jwt = require('../services/jwt')
 
 
-function UsuarioInicial() {
+/*function UsuarioInicial() {
     Empresas.find({ rol: "SuperAdmin", usuario: "SuperAdmin" }, (err, usuarioEncontrado) => {
       if (usuarioEncontrado.length == 0) {
         bcrypt.hash("123456", null, null, (err, passwordEncriptada) => {
@@ -16,6 +16,7 @@ function UsuarioInicial() {
       }
     });
   }
+  */
   
 
 
@@ -56,7 +57,7 @@ function agregarEmpresa(req, res) {
     var parametros = req.body;
     var empresasModel = new Empresas();
 
-    if (parametros.nombre && parametros.usuario && parametros.email && parametros.password) {
+    if (parametros.nombre && parametros.email && parametros.password) {
         empresasModel.nombre = parametros.nombre;
         empresasModel.email = parametros.email;
         empresasModel.usuario = parametros.usuario;
@@ -142,6 +143,22 @@ function editarEmpresa (req, res) {
     var IdEmpr = req.params.idEmpresa;
     var parametros = req.body;
 
+    //if(idEmpr !== req.user.sub) return res.status(500).send({mensaje: 'No puede editar otras Empresas'});
+
+    Empresas.findByIdAndUpdate(req.user.sub, parametros, { new: true } ,(err, empresaActualizada) => {
+        if (err) return res.status(500).send({ mensaje: 'Error en la peticion'});
+        if(!empresaActualizada) return res.status(404).send( { mensaje: 'Error al Editar la empresa'});
+
+        return res.status(200).send({ empresa: empresaActualizada});
+    });
+}
+
+function editarEmpresaAdmin (req, res) {
+    var IdEmpr = req.params.idEmpresa;
+    var parametros = req.body;
+
+    //if(idEmpr !== req.user.sub) return res.status(500).send({mensaje: 'No puede editar otras Empresas'});
+
     Empresas.findByIdAndUpdate(IdEmpr, parametros, { new: true } ,(err, empresaActualizada) => {
         if (err) return res.status(500).send({ mensaje: 'Error en la peticion'});
         if(!empresaActualizada) return res.status(404).send( { mensaje: 'Error al Editar la empresa'});
@@ -183,11 +200,12 @@ function ObtenerEmpresaId(req, res) {
 
 
 module.exports = {
-    UsuarioInicial,
+    //UsuarioInicial,
     Login,
     agregarEmpresa,
     editarEmpresa,
     eliminarEmpresa,
     ObtenerEmpresas,
-    ObtenerEmpresaId
+    ObtenerEmpresaId,
+    editarEmpresaAdmin
 }
